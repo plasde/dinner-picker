@@ -1,0 +1,114 @@
+{
+  "dinners": {
+    "soup": [
+      {
+        "name": "Tomato Basil Soup",
+        "category": "soup",
+        "ingredients": ["canned tomatoes", "fresh basil", "onion", "garlic", "cream", "vegetable broth", "olive oil"]
+      },
+      {
+        "name": "Chicken Noodle Soup",
+        "category": "soup",
+        "ingredients": ["chicken breast", "egg noodles", "carrots", "celery", "onion", "chicken broth", "thyme"]
+      },
+      {
+        "name": "Butternut Squash Soup",
+        "category": "soup",
+        "ingredients": ["butternut squash", "onion", "ginger", "coconut milk", "vegetable broth", "nutmeg"]
+      },
+      {
+        "name": "Mushroom Barley Soup",
+        "category": "soup",
+        "ingredients": ["mixed mushrooms", "pearl barley", "onion", "garlic", "vegetable broth", "thyme", "bay leaves"]
+      }
+    ],
+    "noodles": [
+      {
+        "name": "Chicken Pad Thai",
+        "category": "noodles",
+        "ingredients": ["rice noodles", "chicken", "fish sauce", "tamarind paste", "eggs", "bean sprouts", "peanuts"]
+      },
+      {
+        "name": "Beef Ramen",
+        "category": "noodles",
+        "ingredients": ["ramen noodles", "beef strips", "soy sauce", "miso paste", "green onions", "soft boiled eggs", "nori"]
+      },
+      {
+        "name": "Vegetable Pho",
+        "category": "noodles",
+        "ingredients": ["rice noodles", "vegetable broth", "ginger", "star anise", "bean sprouts", "herbs", "lime"]
+      },
+      {
+        "name": "Shrimp Lo Mein",
+        "category": "noodles",
+        "ingredients": ["lo mein noodles", "shrimp", "soy sauce", "sesame oil", "vegetables", "garlic", "ginger"]
+      }
+    ],
+    "pasta": [
+      {
+        "name": "Spaghetti Carbonara",
+        "category": "pasta",
+        "ingredients": ["spaghetti", "eggs", "bacon", "parmesan", "black pepper", "garlic"]
+      },
+      {
+        "name": "Beef Stroganoff",
+        "category": "pasta",
+        "ingredients": ["egg noodles", "beef strips", "mushrooms", "sour cream", "onion", "beef broth"]
+      },
+      {
+        "name": "Pesto Linguine",
+        "category": "pasta",
+        "ingredients": ["linguine", "basil", "pine nuts", "parmesan", "garlic", "olive oil", "cherry tomatoes"]
+      },
+      {
+        "name": "Lasagna",
+        "category": "pasta",
+        "ingredients": ["lasagna sheets", "ground beef", "ricotta", "mozzarella", "tomato sauce", "onion", "herbs"]
+      }
+    ],
+    "bread-y": [
+      {
+        "name": "Grilled Cheese & Tomato Soup",
+        "category": "bread-y",
+        "ingredients": ["bread", "cheese", "butter", "canned tomatoes", "onion", "garlic", "cream"]
+      },
+      {
+        "name": "Chicken Panini",
+        "category": "bread-y", 
+        "ingredients": ["panini bread", "chicken breast", "mozzarella", "pesto", "tomatoes", "spinach"]
+      },
+      {
+        "name": "French Toast Dinner",
+        "category": "bread-y",
+        "ingredients": ["thick bread", "eggs", "milk", "vanilla", "cinnamon", "bacon", "maple syrup"]
+      },
+      {
+        "name": "Bruschetta Pasta Bake",
+        "category": "bread-y",
+        "ingredients": ["crusty bread", "pasta", "tomatoes", "basil", "mozzarella", "garlic", "olive oil"]
+      }
+    ],
+    "rice-y": [
+      {
+        "name": "Chicken Fried Rice",
+        "category": "rice-y",
+        "ingredients": ["jasmine rice", "chicken", "eggs", "soy sauce", "vegetables", "garlic", "ginger"]
+      },
+      {
+        "name": "Mushroom Risotto",
+        "category": "rice-y", 
+        "ingredients": ["arborio rice", "mushrooms", "vegetable broth", "white wine", "parmesan", "onion", "butter"]
+      },
+      {
+        "name": "Spanish Paella",
+        "category": "rice-y",
+        "ingredients": ["bomba rice", "saffron", "chicken", "shrimp", "bell peppers", "tomatoes", "peas"]
+      },
+      {
+        "name": "Teriyaki Salmon Bowl",
+        "category": "rice-y",
+        "ingredients": ["brown rice", "salmon", "teriyaki sauce", "broccoli", "carrots", "sesame seeds"]
+      }
+    ]
+  }
+}
