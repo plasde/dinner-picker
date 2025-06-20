@@ -10,8 +10,8 @@ import (
 
 type WeekState struct {
     WeekStart        time.Time `json:"week_start"`
-    CurrentWeek      []string  `json:"current_week"`      // dinner names selected this week
-    PreviousWeek     []string  `json:"previous_week"`     // dinner names from last week
+    CurrentWeek      []Dinner  `json:"current_week"`      // Dinners selected this week
+    PreviousWeek     []Dinner  `json:"previous_week"`     // Dinners from last week
 }
 
 const StateFileName = "dinner_state.json"
@@ -23,8 +23,8 @@ func LoadState() (*WeekState, error) {
         // Create new state
         state := &WeekState{
             WeekStart:    GetCurrentWeekStart(),
-            CurrentWeek:  []string{},
-            PreviousWeek: []string{},
+            CurrentWeek:  []Dinner{},
+            PreviousWeek: []Dinner{},
         }
         return state, nil
     }
@@ -66,7 +66,7 @@ func (s *WeekState) CheckNewWeek() {
     // If we're in a new week, rotate the selections
     if !s.WeekStart.Equal(currentWeekStart) {
         s.PreviousWeek = s.CurrentWeek
-        s.CurrentWeek = []string{}
+        s.CurrentWeek = []Dinner{}
         s.WeekStart = currentWeekStart
     }
 }
@@ -86,25 +86,23 @@ func GetCurrentWeekStart() time.Time {
 // IsAlreadySelected checks if a dinner was selected this week or last week
 func (s *WeekState) IsAlreadySelected(dinnerName string) bool {
     // Check current week
-    for _, name := range s.CurrentWeek {
-        if name == dinnerName {
+    for _, dinner := range s.CurrentWeek {
+        if dinner.Name == dinnerName {
             return true
         }
     }
-    
     // Check previous week
-    for _, name := range s.PreviousWeek {
-        if name == dinnerName {
+    for _, dinner := range s.PreviousWeek {
+        if dinner.Name == dinnerName {
             return true
         }
     }
-    
     return false
 }
 
 // AddSelection adds a dinner to the current week's selections
-func (s *WeekState) AddSelection(dinnerName string) {
-    s.CurrentWeek = append(s.CurrentWeek, dinnerName)
+func (s *WeekState) AddSelection(dinner Dinner) {
+    s.CurrentWeek = append(s.CurrentWeek, dinner)
 }
 
 
@@ -142,6 +140,26 @@ func LoadDinners(filename string) (*DinnerData, error) {
     return &data, nil
 }
 
+// This might have to be deleted
+func GetAvailableDinners(dinners []Dinner, state *WeekState) []Dinner {
+    var AvailableDinners []Dinner  // Changed to []Dinner
+    for _, dinner := range dinners {  // Added the comma and underscore
+        if !state.IsAlreadySelected(dinner.Name) {
+            AvailableDinners = append(AvailableDinners, dinner)
+        } 
+    }
+    return AvailableDinners
+}
+
+func GetUsedCategoriesThisWeek(state *WeekState) []string {
+    var UsedCategories []string
+    for _, dinner := range state.CurrentWeek {
+        UsedCategories = append(UsedCategories, dinner.Category)
+    }
+    return UsedCategories
+}
+
+
 // Example usage
 func main() {
     dinners, err := LoadDinners("dinners.json")
@@ -156,3 +174,4 @@ func main() {
         fmt.Printf("- %s: %d meals\n", category, len(meals))
     }
 }
+
