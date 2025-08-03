@@ -1,0 +1,63 @@
+{
+  "week_start": "2025-08-03T00:00:00+02:00",
+  "current_week": [
+    {
+      "name": "Tomato soup",
+      "category": "soup",
+      "ingredients": [
+        "Tomatoes",
+        "onion",
+        "garlic",
+        "Fresh basil",
+        "bread"
+      ]
+    },
+    {
+      "name": "Chicken noodle salad",
+      "category": "Salad",
+      "ingredients": [
+        "Chicken",
+        "noodles",
+        "peanuts",
+        "vegetables?"
+      ]
+    },
+    {
+      "name": "Soy stir fry noodles/rice",
+      "category": "noodles-rice",
+      "ingredients": [
+        "Noodles/rice",
+        "Chicken",
+        "ginger",
+        "garlic",
+        "soy sauce",
+        "broccoli",
+        "snap beans"
+      ]
+    },
+    {
+      "name": "Shakshuka",
+      "category": "bread-y",
+      "ingredients": [
+        "Pita bread",
+        "eggs",
+        "mutti tomatoes",
+        "peppers",
+        "cumin",
+        "baharat spices"
+      ]
+    },
+    {
+      "name": "Pasta Amatriciana",
+      "category": "pasta",
+      "ingredients": [
+        "Pasta",
+        "mutti tomato",
+        "pancetta",
+        "garlic",
+        "parmesan"
+      ]
+    }
+  ],
+  "previous_week": []
+}

@@ -3,24 +3,48 @@ package main
 import (
     "encoding/json"
     "fmt"
+    "math/rand"
     "os"
     "time"
-    "math/rand"
 )
 
+type Dinner struct {
+    Name        string   `json:"name"`
+    Category    string   `json:"category"`
+    Ingredients []string `json:"ingredients"`
+}
+
+type DinnerData struct {
+    Dinners map[string][]Dinner `json:"dinners"`
+}
+
 type WeekState struct {
-    WeekStart        time.Time `json:"week_start"`
-    CurrentWeek      []Dinner  `json:"current_week"`      // Dinners selected this week
-    PreviousWeek     []Dinner  `json:"previous_week"`     // Dinners from last week
+    WeekStart    time.Time `json:"week_start"`
+    CurrentWeek  []Dinner  `json:"current_week"`
+    PreviousWeek []Dinner  `json:"previous_week"`
 }
 
 const StateFileName = "dinner_state.json"
 
+// LoadDinners reads the JSON file and returns the dinner data
+func LoadDinners(filename string) (*DinnerData, error) {
+    file, err := os.ReadFile(filename)
+    if err != nil {
+        return nil, fmt.Errorf("error reading file: %w", err)
+    }
+
+    var data DinnerData
+    err = json.Unmarshal(file, &data)
+    if err != nil {
+        return nil, fmt.Errorf("error parsing JSON: %w", err)
+    }
+
+    return &data, nil
+}
+
 // LoadState reads the state file, creating a new one if it doesn't exist
 func LoadState() (*WeekState, error) {
-    // Check if state file exists
     if _, err := os.Stat(StateFileName); os.IsNotExist(err) {
-        // Create new state
         state := &WeekState{
             WeekStart:    GetCurrentWeekStart(),
             CurrentWeek:  []Dinner{},
@@ -29,7 +53,6 @@ func LoadState() (*WeekState, error) {
         return state, nil
     }
 
-    // Read existing state
     file, err := os.ReadFile(StateFileName)
     if err != nil {
         return nil, fmt.Errorf("error reading state file: %w", err)
@@ -63,7 +86,6 @@ func (s *WeekState) SaveState() error {
 func (s *WeekState) CheckNewWeek() {
     currentWeekStart := GetCurrentWeekStart()
     
-    // If we're in a new week, rotate the selections
     if !s.WeekStart.Equal(currentWeekStart) {
         s.PreviousWeek = s.CurrentWeek
         s.CurrentWeek = []Dinner{}
@@ -74,24 +96,18 @@ func (s *WeekState) CheckNewWeek() {
 // GetCurrentWeekStart returns the start of the current week (Sunday)
 func GetCurrentWeekStart() time.Time {
     now := time.Now()
-    
-    // Find the most recent Sunday
     daysFromSunday := int(now.Weekday())
     weekStart := now.AddDate(0, 0, -daysFromSunday)
-    
-    // Set to start of day
     return time.Date(weekStart.Year(), weekStart.Month(), weekStart.Day(), 0, 0, 0, 0, weekStart.Location())
 }
 
 // IsAlreadySelected checks if a dinner was selected this week or last week
 func (s *WeekState) IsAlreadySelected(dinnerName string) bool {
-    // Check current week
     for _, dinner := range s.CurrentWeek {
         if dinner.Name == dinnerName {
             return true
         }
     }
-    // Check previous week
     for _, dinner := range s.PreviousWeek {
         if dinner.Name == dinnerName {
             return true
@@ -105,73 +121,100 @@ func (s *WeekState) AddSelection(dinner Dinner) {
     s.CurrentWeek = append(s.CurrentWeek, dinner)
 }
 
-
+// PickRandomDinner selects a random dinner from a category
 func PickRandomDinner(dinners *DinnerData, categoryName string) Dinner {
-    dinnerSlice := dinners.Dinners[categoryName]  // Get the slice directly
-    i := rand.Intn(len(dinnerSlice))              // Random index
-    return dinnerSlice[i]                         // Return the dinner (not print it)
-}
-
-
-
-type Dinner struct {
-    Name        string   `json:"name"`
-    Category    string   `json:"category"`
-    Ingredients []string `json:"ingredients"`
-}
-
-type DinnerData struct {
-    Dinners map[string][]Dinner `json:"dinners"`
-}
-
-// LoadDinners reads the JSON file and returns the dinner data
-func LoadDinners(filename string) (*DinnerData, error) {
-    file, err := os.ReadFile(filename)
-    if err != nil {
-        return nil, fmt.Errorf("error reading file: %w", err)
+    dinnerSlice := dinners.Dinners[categoryName]
+    if len(dinnerSlice) == 0 {
+        panic(fmt.Sprintf("No dinners available in category: %s", categoryName))
     }
-
-    var data DinnerData
-    err = json.Unmarshal(file, &data)
-    if err != nil {
-        return nil, fmt.Errorf("error parsing JSON: %w", err)
-    }
-
-    return &data, nil
+    i := rand.Intn(len(dinnerSlice))
+    return dinnerSlice[i]
 }
 
-// This might have to be deleted
-func GetAvailableDinners(dinners []Dinner, state *WeekState) []Dinner {
-    var AvailableDinners []Dinner  // Changed to []Dinner
-    for _, dinner := range dinners {  // Added the comma and underscore
-        if !state.IsAlreadySelected(dinner.Name) {
-            AvailableDinners = append(AvailableDinners, dinner)
-        } 
+// pickDinnerFromCategory picks a dinner that hasn't been used recently
+func pickDinnerFromCategory(dinners *DinnerData, state *WeekState, category string) Dinner {
+    for {
+        randomDinner := PickRandomDinner(dinners, category)
+        if !state.IsAlreadySelected(randomDinner.Name) {
+            return randomDinner
+        }
     }
-    return AvailableDinners
 }
 
-func GetUsedCategoriesThisWeek(state *WeekState) []string {
-    var UsedCategories []string
-    for _, dinner := range state.CurrentWeek {
-        UsedCategories = append(UsedCategories, dinner.Category)
+// SelectWeeklyDinners picks 5 dinners for the week
+func SelectWeeklyDinners(dinners *DinnerData, state *WeekState) map[string]Dinner {
+    selections := make(map[string]Dinner)
+    
+    // Sunday - always soup
+    sundayDinner := pickDinnerFromCategory(dinners, state, "soup")
+    selections["Sunday"] = sundayDinner
+    state.AddSelection(sundayDinner)
+    
+    // Monday-Thursday - pick from remaining categories
+    categories := []string{"noodles-rice", "pasta", "bread-y", "Salad"}
+    days := []string{"Monday", "Tuesday", "Wednesday", "Thursday"}
+    
+    // Shuffle categories for variety
+    rand.Shuffle(len(categories), func(i, j int) {
+        categories[i], categories[j] = categories[j], categories[i]
+    })
+    
+    for i, day := range days {
+        dinner := pickDinnerFromCategory(dinners, state, categories[i])
+        selections[day] = dinner
+        state.AddSelection(dinner)
     }
-    return UsedCategories
+    
+    return selections
 }
 
+// PrintWeeklyMenu prints the selected dinners with ingredients
+func PrintWeeklyMenu(selections map[string]Dinner) {
+    days := []string{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"}
+    
+    fmt.Printf("=== DINNER PLAN FOR WEEK OF %s ===\n\n", time.Now().Format("January 2, 2006"))
+    
+    for _, day := range days {
+        dinner := selections[day]
+        fmt.Printf("%s - %s\n", day, dinner.Name)
+        for _, ingredient := range dinner.Ingredients {
+            fmt.Printf("  %s\n", ingredient)
+        }
+        fmt.Println()
+    }
+}
 
-// Example usage
 func main() {
+    // Seed random number generator
+    rand.Seed(time.Now().UnixNano())
+    
+    // Load dinner data
     dinners, err := LoadDinners("dinners.json")
     if err != nil {
         fmt.Printf("Error loading dinners: %v\n", err)
         return
     }
-
-    // Print available categories
-    fmt.Println("Available categories:")
-    for category, meals := range dinners.Dinners {
-        fmt.Printf("- %s: %d meals\n", category, len(meals))
+    
+    // Load state
+    state, err := LoadState()
+    if err != nil {
+        fmt.Printf("Error loading state: %v\n", err)
+        return
     }
+    
+    // Check if it's a new week
+    state.CheckNewWeek()
+    
+    // Select dinners for the week
+    selections := SelectWeeklyDinners(dinners, state)
+    
+    // Save updated state
+    err = state.SaveState()
+    if err != nil {
+        fmt.Printf("Error saving state: %v\n", err)
+        return
+    }
+    
+    // Print the menu
+    PrintWeeklyMenu(selections)
 }
-
